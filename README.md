@@ -1,2 +1,2 @@
-# schedHive
-A People-aware Communication and Scheduling Tool for Academics
+# projectStamina
+Coffee/Sleep Monitoring System
