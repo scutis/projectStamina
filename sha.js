@@ -1,5 +1,5 @@
 var crypto = require('crypto');
-var key = '9876543210';
+var key = 'qW25GkqhCcfp8mE9';
 
 var hash = function (plainText, salt){
     var sha512 = crypto.createHmac('sha512', key);

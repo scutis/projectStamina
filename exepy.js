@@ -5,7 +5,7 @@ var options = {
     pythonPath: '/usr/bin/python',
     pythonOptions: ['-u'],
     scriptPath: 'scripts',
-    args: ['value1', 'value2', 'value3']
+    args: ['cluster it', 'user1,5,7,9,xxx;user2,3,6,8,yyy']
 };
 
 pyshell.run('ml.py', options, function (err, results) {

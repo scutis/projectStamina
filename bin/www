@@ -9,7 +9,6 @@ var mysql = require('../db');
 mysql.connect(); //Connect to mysql database
 
 var app = require('../app');
-var socket = require('../io');
 var debug = require('debug')('projectStamina:server');
 var http = require('http');
 
@@ -27,7 +26,6 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-socket(server);
 
 /**
  * Listen on provided port, on all network interfaces.
