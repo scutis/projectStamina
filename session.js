@@ -1,5 +1,5 @@
 var session = require('express-session')({
-    secret: "secret",
+    secret: 'jx9fQHgUK3qnqjBR',
     resave: true,
     saveUninitialized: true
 });

@@ -2,19 +2,71 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('../db');
 var aes = require('../aes');
+var pyshell = require('python-shell');
+var events = require('events');
 
 //POST request to insert data into database
 router.post('/', function(req, res) {
     //If user is authenticated
     if (req.session.user) {
+        var eventEmitter = new events.EventEmitter();
+
+        var reply = function () {
+            mysql.query('SELECT data FROM coffee WHERE user = ?', entry.user,  function (err, result) {
+                var coffee = '';
+                if (err)
+                    return err;
+
+                for (var i = 0; i < result.length; i++){
+                    coffee += aes.decrypt(result[i].data) + ';';
+                }
+                mysql.query('SELECT data FROM sleep WHERE user = ?', entry.user, function (err, result) {
+                    var sleep = '';
+                    if (err)
+                        return err;
+
+                    for (var i = 0; i < result.length; i++){
+                        sleep += aes.decrypt(result[i].data) + ';';
+                    }
+                    mysql.query('SELECT data FROM activity WHERE user = ?', entry.user, function (err, result) {
+                        var activity = '';
+                        if (err)
+                            return err;
+
+                        for (var i = 0; i < result.length; i++){
+                            activity += aes.decrypt(result[i].data) + ';';
+                        }
+
+                        var options = {
+                            mode: 'text',
+                            pythonPath: '/usr/bin/python',
+                            pythonOptions: ['-u'],
+                            scriptPath: 'scripts',
+                            args: [coffee, sleep, activity]
+                        };
+
+                        pyshell.run('ml.py', options, function (err, result) {
+                            if (err)
+                                return err;
+
+                            res.send(result);
+                        });
+
+                    });
+                });
+
+            });
+        };
+
+        eventEmitter.on('respond', reply);
 
         var entry = {
-            user: req.session.user.id,
+            user: '50',
             data: ''
         };
 
         switch(req.body.action) {
-            case 'coffee_intake':
+            case 'coffee':
 
                 if (req.body.timestamp)
                     entry.data = req.body.timestamp;
@@ -33,6 +85,7 @@ router.post('/', function(req, res) {
                         res.sendStatus(500);
                         return;
                     }
+                    eventEmitter.emit('respond');
                 });
 
                 break;
@@ -52,6 +105,7 @@ router.post('/', function(req, res) {
                         res.sendStatus(500);
                         return;
                     }
+                    eventEmitter.emit('respond');
                 });
 
                 break;
@@ -71,10 +125,11 @@ router.post('/', function(req, res) {
                         res.sendStatus(500);
                         return;
                     }
+                    eventEmitter.emit('respond');
                 });
 
                 break;
-            case 'wakeup':
+            case 'wake_up':
 
                 if (req.body.timestamp && req.body.quality) {
                     mysql.query('SELECT id, data FROM sleep WHERE user = ? ORDER BY id DESC LIMIT 1', entry.user, function (err, result) {
@@ -99,11 +154,11 @@ router.post('/', function(req, res) {
                                 res.sendStatus(500);
                                 return;
                             }
+                            eventEmitter.emit('respond');
                         });
                     });
                 } else {
                     res.sendStatus(400);
-                    return;
                 }
 
                 break;
@@ -134,21 +189,18 @@ router.post('/', function(req, res) {
                                 res.sendStatus(500);
                                 return;
                             }
+                            eventEmitter.emit('respond');
                         });
 
                     });
                 } else {
                     res.sendStatus(400);
-                    return;
                 }
 
                 break;
             default:
                 res.sendStatus(400);
-                return;
         }
-
-        res.send("OK");
 
     } else{
         res.sendStatus(404);
