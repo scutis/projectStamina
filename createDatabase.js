@@ -13,9 +13,7 @@ connection.connect();
 connection.query('CREATE DATABASE projectStamina');
 connection.query('USE projectStamina');
 connection.query('CREATE TABLE users (id INT unsigned PRIMARY KEY AUTO_INCREMENT, username VARCHAR(20) NOT NULL, hash VARCHAR(255) NOT NULL, salt VARCHAR(10) NOT NULL, password VARCHAR(255))');
-connection.query('CREATE TABLE coffee (id INT unsigned PRIMARY KEY AUTO_INCREMENT, user INT unsigned NOT NULL, data VARCHAR(255) NOT NULL)');
-connection.query('CREATE TABLE sleep (id INT unsigned PRIMARY KEY AUTO_INCREMENT, user INT unsigned NOT NULL, data VARCHAR(255) NOT NULL)');
-connection.query('CREATE TABLE activity (id INT unsigned PRIMARY KEY AUTO_INCREMENT, user INT unsigned NOT NULL, data VARCHAR(255) NOT NULL)');
+connection.query('CREATE TABLE data (id INT unsigned PRIMARY KEY AUTO_INCREMENT, user INT unsigned NOT NULL, data TEXT NOT NULL)');
 
 var entry = {
     username: '',
