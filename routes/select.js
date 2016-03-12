@@ -4,10 +4,11 @@ var func = require('../func');
 
 
 router.post('/', function(req, res){
+    //req.session.user = {id:'100'};
     if (req.session.user) {
 
-        if (req.body.action == 'next_coffee'){
-            func.nextCoffee(res, req.session.user.id);
+        if (req.body.req == 'coffee_virtual'){
+            func.nextCoffee(res, req.session.user.id, 'can_he_drink');
         }else{
             res.sendStatus(400);
         }

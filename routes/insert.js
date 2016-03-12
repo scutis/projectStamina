@@ -2,19 +2,14 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('../db');
 var aes = require('../aes');
-var events = require('events');
 var obj = require('../obj');
 var func = require('../func');
 
 //POST request to insert data into database
 router.post('/', function(req, res) {
     //If user is authenticated
+    //req.session.user = {id: '85'};
     if (req.session.user) {
-
-        var eventEmitter = new events.EventEmitter();
-        var nextCoffee = func.nextCoffee(res, req.session.user.id);
-
-        eventEmitter.on('response', nextCoffee);
 
         switch(req.body.action) {
             case 'coffee':
@@ -35,7 +30,7 @@ router.post('/', function(req, res) {
                                 res.sendStatus(500);
                                 return;
                             }
-                            eventEmitter.emit('response');
+                            func.nextCoffee(res, req.session.user.id, 'is_last_coffee');
                         });
                     }
                 });
@@ -60,7 +55,7 @@ router.post('/', function(req, res) {
                                 res.sendStatus(500);
                                 return;
                             }
-                            eventEmitter.emit('response');
+                            res.send("true");
                         });
                     }
                 });
@@ -85,7 +80,7 @@ router.post('/', function(req, res) {
                                 res.sendStatus(500);
                                 return;
                             }
-                            eventEmitter.emit('response');
+                            res.send("true");
                         });
                     }
                 });
@@ -111,14 +106,14 @@ router.post('/', function(req, res) {
                                 res.sendStatus(500);
                                 return;
                             }
-                            eventEmitter.emit('response');
+                            res.send("true");
                         });
                     }
                 });
 
                 break;
             case 'wake_up':
-                var data = new obj.Data(new obj.WakeUp(parseInt(req.body.timestamp), parseInt(req.body.quality)), new obj.Sleep, [], []);
+                var data = new obj.Data(new obj.WakeUp(parseInt(req.body.timestamp), parseInt(req.body.quality)), new obj.Sleep, [], [new obj.Activity(0)]);
                 var entry = new obj.Entry(req.session.user.id, aes.encrypt(JSON.stringify(data)));
 
                 mysql.query('INSERT INTO data SET ?', entry, function (err) {
@@ -126,7 +121,7 @@ router.post('/', function(req, res) {
                         res.sendStatus(500);
                         return;
                     }
-                    eventEmitter.emit('response');
+                    func.nextCoffee(res, req.session.user.id, 'expected_activity');
                 });
 
                 break;
