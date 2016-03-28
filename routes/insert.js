@@ -8,7 +8,6 @@ var func = require('../func');
 //POST request to insert data into database
 router.post('/', function(req, res) {
     //If user is authenticated
-    //req.session.user = {id: '85'};
     if (req.session.user) {
 
         switch(req.body.action) {
@@ -113,7 +112,7 @@ router.post('/', function(req, res) {
 
                 break;
             case 'wake_up':
-                var data = new obj.Data(new obj.WakeUp(parseInt(req.body.timestamp), parseInt(req.body.quality)), new obj.Sleep, [], [new obj.Activity(0)]);
+                var data = new obj.Data(new obj.WakeUp(parseInt(req.body.timestamp), parseInt(req.body.quality)), new obj.Sleep(0), [], [new obj.Activity(0)]);
                 var entry = new obj.Entry(req.session.user.id, aes.encrypt(JSON.stringify(data)));
 
                 mysql.query('INSERT INTO data SET ?', entry, function (err) {

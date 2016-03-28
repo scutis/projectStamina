@@ -10,8 +10,6 @@ var nextCoffee = function (res, userId, req) {
             return;
         }
 
-        aes.decrypt(result[0].data);
-
         var input = [];
 
         for (var i = 0; i < result.length; i++){
@@ -27,9 +25,11 @@ var nextCoffee = function (res, userId, req) {
         };
 
         pyshell.run('main.py', options, function (err, result) {
-            if (err)
-                return err;
 
+
+            if (err)
+
+                return err;
             res.send(result[0]);
         });
     });

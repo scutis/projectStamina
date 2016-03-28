@@ -3,15 +3,10 @@ var router = express.Router();
 var func = require('../func');
 
 
-router.post('/', function(req, res){
-    //req.session.user = {id:'100'};
+router.get('/', function(req, res){
     if (req.session.user) {
+        func.nextCoffee(res, req.session.user.id, 'can_he_drink');
 
-        if (req.body.req == 'coffee_virtual'){
-            func.nextCoffee(res, req.session.user.id, 'can_he_drink');
-        }else{
-            res.sendStatus(400);
-        }
    } else{
         res.sendStatus(404);
    }
